@@ -3,6 +3,7 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
+using FormsNativeVideoPlayer;
 using FormsNativeVideoPlayer.Droid;
 
 using Android.App;
@@ -13,13 +14,13 @@ using Android.Widget;
 using Android.OS;
 using Android.Content.Res;
 
-[assembly: ExportRenderer(typeof(ContentView), typeof(VideoPlayer_CustomRenderer))]
+[assembly: ExportRenderer(typeof(StreamingVideoView), typeof(VideoPlayer_CustomRenderer))]
 
 namespace FormsNativeVideoPlayer.Droid
 {
 	public class VideoPlayer_CustomRenderer : ViewRenderer
 	{
-        string movieUrl = "https://logminds.com/video/2010-11-02-GaryNuman-Fillmore-SF.mp4";
+        string movieUrl;
 		//Create views globally so they can be referenced in OnLayout override
 		VideoView videoView;
 		Android.Widget.Button playButton;
@@ -30,6 +31,11 @@ namespace FormsNativeVideoPlayer.Droid
 		protected override void OnElementChanged (ElementChangedEventArgs<Xamarin.Forms.View> e)
 		{
 			base.OnElementChanged (e);
+
+			Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged");
+			if (e.NewElement != null) {
+                movieUrl = ((StreamingVideoView)e.NewElement).VideoUrl;
+            }
 
 			//Get LayoutInflater and inflate from axml
 			//Important note, this project utilizes a layout-land folder in the Resources folder

@@ -6,13 +6,14 @@ namespace FormsNativeVideoPlayer
 {
 	public class LandingPage : ContentPage
 	{
-		ContentView videoPlayer;
+		StreamingVideoView videoPlayer;
 
 		public LandingPage ()
 		{
-			videoPlayer = new ContentView {
+			videoPlayer = new StreamingVideoView {
 				WidthRequest = App.ScreenWidth/2,
 				HeightRequest = App.ScreenHeight/2,
+                VideoUrl = "https://logminds.com/video/30011-2.mp4",
 			};
 
 			Content = new StackLayout {

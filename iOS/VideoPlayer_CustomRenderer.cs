@@ -3,6 +3,7 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
+using FormsNativeVideoPlayer;
 using FormsNativeVideoPlayer.iOS;
 
 using AVFoundation;
@@ -11,13 +12,13 @@ using UIKit;
 using CoreGraphics;
 using AVKit;
 
-[assembly: ExportRenderer(typeof(ContentView), typeof(VideoPlayer_CustomRenderer))]
+[assembly: ExportRenderer(typeof(StreamingVideoView), typeof(VideoPlayer_CustomRenderer))]
 
 namespace FormsNativeVideoPlayer.iOS
 {
-	public class VideoPlayer_CustomRenderer : ViewRenderer
+    public class VideoPlayer_CustomRenderer : ViewRenderer
 	{
-		string movieUrl = "https://logminds.com/video/2010-11-02-GaryNuman-Fillmore-SF.mp4";
+		string movieUrl;
 		//globally declare variables
 		AVAsset _asset;
 		AVPlayerItem _playerItem;
@@ -30,8 +31,14 @@ namespace FormsNativeVideoPlayer.iOS
 		{
 			base.OnElementChanged (e);
 
+            Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged");
+			if (e.NewElement != null) {
+				movieUrl = ((StreamingVideoView)e.NewElement).VideoUrl;
+			}
+
 			//Get the video
 			//bubble up to the AVPlayerLayer
+			
             var url = new NSUrl (movieUrl);
 			_asset = AVAsset.FromUrl (url);
 
@@ -51,9 +58,19 @@ namespace FormsNativeVideoPlayer.iOS
 				_player.Play();
 			};
 		}
+
+        public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+        {
+            Console.WriteLine("FormsNativeVideoPlayer.GetDesiredSize : {0} x {1}", widthConstraint, heightConstraint);
+			return new SizeRequest(Size.Zero, Size.Zero);
+        }
+
 		public override void LayoutSubviews ()
 		{
 			base.LayoutSubviews ();
+            Console.WriteLine("FormsNativeVideoPlayer.LayoutSubviews : {0} x {1} : {2} x {3}",
+                              NativeView.Frame.Width, NativeView.Frame.Height,
+                              UIKit.UIScreen.MainScreen.Bounds.Width, UIKit.UIScreen.MainScreen.Bounds.Height);
 
 			//layout the elements depending on what screen orientation we are. 
 			if (DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.Portrait) {
@@ -62,7 +79,7 @@ namespace FormsNativeVideoPlayer.iOS
 				NativeView.Layer.AddSublayer (_playerLayer);
 				NativeView.Add (playButton);
 			} else if (DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeLeft || DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeRight) {
-				_playerLayer.Frame = NativeView.Frame;
+				_playerLayer.Frame = UIKit.UIScreen.MainScreen.Bounds;
 				NativeView.Layer.AddSublayer (_playerLayer);
 				playButton.Frame = new CGRect (0, 0, 0, 0);
 			}
