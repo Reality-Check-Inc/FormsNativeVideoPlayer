@@ -36,9 +36,9 @@ Xamarin.Forms Specialist
 @ThreeBrewMates  
 
 
-#### Xamarin Studio
+#### Multiple Studio Instances
 
-macOS open multiple Visual Studio instances:
+macOS open multiple Xamarin/Visual Studio instances:
 
     open -n /Applications/Visual\ Studio.app/  
     open -n /Applications/Xamarin\ Studio.app/  

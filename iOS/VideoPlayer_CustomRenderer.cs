@@ -17,6 +17,7 @@ namespace FormsNativeVideoPlayer.iOS
 {
 	public class VideoPlayer_CustomRenderer : ViewRenderer
 	{
+		string movieUrl = "https://logminds.com/video/2010-11-02-GaryNuman-Fillmore-SF.mp4";
 		//globally declare variables
 		AVAsset _asset;
 		AVPlayerItem _playerItem;
@@ -31,7 +32,7 @@ namespace FormsNativeVideoPlayer.iOS
 
 			//Get the video
 			//bubble up to the AVPlayerLayer
-			var url = new NSUrl ("http://www.androidbegin.com/tutorial/AndroidCommercial.3gp");
+            var url = new NSUrl (movieUrl);
 			_asset = AVAsset.FromUrl (url);
 
 			_playerItem = new AVPlayerItem (_asset);

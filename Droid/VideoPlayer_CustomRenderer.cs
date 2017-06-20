@@ -19,6 +19,7 @@ namespace FormsNativeVideoPlayer.Droid
 {
 	public class VideoPlayer_CustomRenderer : ViewRenderer
 	{
+        string movieUrl = "https://logminds.com/video/2010-11-02-GaryNuman-Fillmore-SF.mp4";
 		//Create views globally so they can be referenced in OnLayout override
 		VideoView videoView;
 		Android.Widget.Button playButton;
@@ -46,9 +47,13 @@ namespace FormsNativeVideoPlayer.Droid
 			//Give some color to the play button, but not important
 			playButton.SetBackgroundColor (Android.Graphics.Color.Aqua);
 			//uri for a free video
-			var uri = Android.Net.Uri.Parse ("https://www.dropbox.com/s/hi45psyy0wq9560/PigsInAPolka1943.mp4?dl=1");
+			var uri = Android.Net.Uri.Parse (movieUrl);
 			//Set the videoView with our uri, this could also be a local video on device
 			videoView.SetVideoURI (uri);
+
+            // show a frame...
+            videoView.SeekTo(100);
+
 			//Assign click event on our play button to play the video
 			playButton.Click += PlayVideo;
 		}      
