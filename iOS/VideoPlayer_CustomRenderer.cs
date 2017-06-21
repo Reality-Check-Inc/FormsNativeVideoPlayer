@@ -21,12 +21,8 @@ namespace FormsNativeVideoPlayer.iOS
 	{
         MPMoviePlayerController _mpc;
 
-        AVPlayer _avp;
-        AVPlayerLayer _avpl;
-
 		string _movieUrl;
 		AVAsset _asset;
-		AVPlayerItem _playerItem;
 
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
 		{
@@ -35,12 +31,6 @@ namespace FormsNativeVideoPlayer.iOS
             if (_mpc == null) {
                 _mpc = new MPMoviePlayerController();
              }
-            /*
-            if (_avp == null) {
-                _avp = new AVPlayer();
-				_avpl = AVPlayerLayer.FromPlayer(_avp);
-			}
-			 */
 
             if (e.OldElement != null) {
 				Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged old element adjusted");
@@ -51,8 +41,7 @@ namespace FormsNativeVideoPlayer.iOS
                 Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged {0}", _movieUrl);
 				var url = new NSUrl(_movieUrl);
 				_asset = AVAsset.FromUrl(url);
-                if (_asset != null)
-                {
+                if (_asset != null) {
                     Console.WriteLine("asset duration:D {0}", _asset.Duration);
                 }
 
@@ -60,18 +49,8 @@ namespace FormsNativeVideoPlayer.iOS
                     _mpc.ContentUrl = url;
                     _mpc.Play();
                 }
-                if (_avp != null) {
-					_playerItem = new AVPlayerItem(_asset);
-					_avp.ReplaceCurrentItemWithPlayerItem(_playerItem);
-                }
 			}
 		}
-
-        public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
-        {
-            Console.WriteLine("FormsNativeVideoPlayer.GetDesiredSize : {0} x {1}", widthConstraint, heightConstraint);
-			return new SizeRequest(Size.Zero, Size.Zero);
-        }
 
 		public override void LayoutSubviews ()
 		{
@@ -86,22 +65,12 @@ namespace FormsNativeVideoPlayer.iOS
                     _mpc.ControlStyle = MPMovieControlStyle.Embedded;
 					NativeView.Add(_mpc.View);
 				}
-                if (_avpl != null)
-                {
-                    _avpl.Frame = NativeView.Frame;
-                    NativeView.Layer.AddSublayer(_avpl);
-                }
 			} else if (DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeLeft || DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeRight) {
                 if (_mpc != null) {
 					_mpc.View.Frame = UIKit.UIScreen.MainScreen.Bounds;
                     _mpc.ControlStyle = MPMovieControlStyle.Fullscreen;
 					NativeView.Add(_mpc.View);
 				}
-                if (_avpl != null)
-                {
-                    _avpl.Frame = UIKit.UIScreen.MainScreen.Bounds;
-                    NativeView.Layer.AddSublayer(_avpl);
-                }
 			}
 		}
 	}
