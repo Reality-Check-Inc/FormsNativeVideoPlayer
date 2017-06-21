@@ -11,8 +11,8 @@ namespace FormsNativeVideoPlayer
 		public LandingPage ()
 		{
 			videoPlayer = new StreamingVideoView {
-				WidthRequest = App.ScreenWidth/2,
-				HeightRequest = App.ScreenHeight/2,
+				WidthRequest = App.ScreenWidth,
+				HeightRequest = App.ScreenHeight/3,
                 VideoUrl = "https://logminds.com/video/30011-2.mp4",
 			};
 
