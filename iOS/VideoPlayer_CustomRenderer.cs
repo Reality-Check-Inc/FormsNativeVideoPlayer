@@ -11,6 +11,7 @@ using Foundation;
 using UIKit;
 using CoreGraphics;
 using AVKit;
+using MediaPlayer;
 
 [assembly: ExportRenderer(typeof(StreamingVideoView), typeof(VideoPlayer_CustomRenderer))]
 
@@ -18,45 +19,52 @@ namespace FormsNativeVideoPlayer.iOS
 {
     public class VideoPlayer_CustomRenderer : ViewRenderer
 	{
-		string movieUrl;
-		//globally declare variables
+        MPMoviePlayerController _mpc;
+
+        AVPlayer _avp;
+        AVPlayerLayer _avpl;
+
+		string _movieUrl;
 		AVAsset _asset;
 		AVPlayerItem _playerItem;
-		AVPlayer _player;
-
-		AVPlayerLayer _playerLayer;
-		UIButton playButton;
 
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
 		{
 			base.OnElementChanged (e);
 
-            Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged");
-			if (e.NewElement != null) {
-				movieUrl = ((StreamingVideoView)e.NewElement).VideoUrl;
+            if (_mpc == null) {
+                _mpc = new MPMoviePlayerController();
+             }
+            /*
+            if (_avp == null) {
+                _avp = new AVPlayer();
+				_avpl = AVPlayerLayer.FromPlayer(_avp);
+			}
+			 */
+
+            if (e.OldElement != null) {
+				Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged old element adjusted");
 			}
 
-			//Get the video
-			//bubble up to the AVPlayerLayer
-			
-            var url = new NSUrl (movieUrl);
-			_asset = AVAsset.FromUrl (url);
+			if (e.NewElement != null) {
+				_movieUrl = ((StreamingVideoView)e.NewElement).VideoUrl;
+                Console.WriteLine("FormsNativeVideoPlayer.OnElementChanged {0}", _movieUrl);
+				var url = new NSUrl(_movieUrl);
+				_asset = AVAsset.FromUrl(url);
+                if (_asset != null)
+                {
+                    Console.WriteLine("asset duration:D {0}", _asset.Duration);
+                }
 
-			_playerItem = new AVPlayerItem (_asset);
-
-			_player = new AVPlayer (_playerItem);
-
-			_playerLayer = AVPlayerLayer.FromPlayer (_player);
-
-			//Create the play button
-			playButton = new UIButton ();
-			playButton.SetTitle ("Play Video", UIControlState.Normal);
-			playButton.BackgroundColor = UIColor.Gray;
-
-			//Set the trigger on the play button to play the video
-			playButton.TouchUpInside += (object sender, EventArgs arg) => {
-				_player.Play();
-			};
+				if (_mpc != null) {
+                    _mpc.ContentUrl = url;
+                    _mpc.Play();
+                }
+                if (_avp != null) {
+					_playerItem = new AVPlayerItem(_asset);
+					_avp.ReplaceCurrentItemWithPlayerItem(_playerItem);
+                }
+			}
 		}
 
         public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -72,16 +80,28 @@ namespace FormsNativeVideoPlayer.iOS
                               NativeView.Frame.Width, NativeView.Frame.Height,
                               UIKit.UIScreen.MainScreen.Bounds.Width, UIKit.UIScreen.MainScreen.Bounds.Height);
 
-			//layout the elements depending on what screen orientation we are. 
 			if (DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.Portrait) {
-				playButton.Frame = new CGRect (0, NativeView.Frame.Bottom - 50, NativeView.Frame.Width, 50);
-				_playerLayer.Frame = NativeView.Frame;
-				NativeView.Layer.AddSublayer (_playerLayer);
-				NativeView.Add (playButton);
+                if (_mpc != null) {
+                    _mpc.View.Frame = NativeView.Frame;
+                    _mpc.ControlStyle = MPMovieControlStyle.Embedded;
+					NativeView.Add(_mpc.View);
+				}
+                if (_avpl != null)
+                {
+                    _avpl.Frame = NativeView.Frame;
+                    NativeView.Layer.AddSublayer(_avpl);
+                }
 			} else if (DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeLeft || DeviceHelper.iOSDevice.Orientation == UIDeviceOrientation.LandscapeRight) {
-				_playerLayer.Frame = UIKit.UIScreen.MainScreen.Bounds;
-				NativeView.Layer.AddSublayer (_playerLayer);
-				playButton.Frame = new CGRect (0, 0, 0, 0);
+                if (_mpc != null) {
+					_mpc.View.Frame = UIKit.UIScreen.MainScreen.Bounds;
+                    _mpc.ControlStyle = MPMovieControlStyle.Fullscreen;
+					NativeView.Add(_mpc.View);
+				}
+                if (_avpl != null)
+                {
+                    _avpl.Frame = UIKit.UIScreen.MainScreen.Bounds;
+                    NativeView.Layer.AddSublayer(_avpl);
+                }
 			}
 		}
 	}
