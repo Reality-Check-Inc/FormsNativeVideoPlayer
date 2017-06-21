@@ -8,28 +8,31 @@ using FormsNativeVideoPlayer.iOS;
 
 using AVFoundation;
 using Foundation;
-using UIKit;
-using CoreGraphics;
-using AVKit;
 using MediaPlayer;
+using UIKit;
 
 [assembly: ExportRenderer(typeof(StreamingVideoView), typeof(VideoPlayer_CustomRenderer))]
 
 namespace FormsNativeVideoPlayer.iOS
 {
-    public class VideoPlayer_CustomRenderer : ViewRenderer
+    public class VideoPlayer_CustomRenderer : ViewRenderer<StreamingVideoView, UIView>
 	{
         MPMoviePlayerController _mpc;
 
 		string _movieUrl;
 		AVAsset _asset;
 
-		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
+		protected override void OnElementChanged (ElementChangedEventArgs<StreamingVideoView> e)
 		{
 			base.OnElementChanged (e);
 
             if (_mpc == null) {
                 _mpc = new MPMoviePlayerController();
+                //_mpc.ScalingMode = MPMovieScalingMode.AspectFill;
+                _mpc.RepeatMode = MPMovieRepeatMode.None;
+                _mpc.ShouldAutoplay = false;
+				_mpc.View.BackgroundColor = UIColor.Clear;
+                SetNativeControl(_mpc.View);
              }
 
             if (e.OldElement != null) {
@@ -47,7 +50,7 @@ namespace FormsNativeVideoPlayer.iOS
 
 				if (_mpc != null) {
                     _mpc.ContentUrl = url;
-                    _mpc.Play();
+                    _mpc.PrepareToPlay();
                 }
 			}
 		}
